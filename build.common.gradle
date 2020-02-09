@@ -41,7 +41,7 @@ android {
         applicationId 'com.qualcomm.ftcrobotcontroller'
         minSdkVersion 24
         targetSdkVersion 28
-        multiDexEnabled true
+        multiDexEnabled false
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -107,5 +107,6 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
+    jcenter()
 }
 apply from: 'build.release.gradle'
