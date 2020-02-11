@@ -13,19 +13,19 @@ functions for teleop toggling and autonomous position setting. By Jake, Dec. 201
 
 public class FoundationHooks {
 
-    public Servo leftFoundationServo;
-    public Servo rightFoundationServo;
+    private Servo leftFoundationServo;
+    private Servo rightFoundationServo;
     public LinearOpMode l;
     public Telemetry realTelemetry;
 
     public enum hookPositions {
-        up, down
+        UP,
+        DOWN
     }
 
-    private hookPositions hook_pos = hookPositions.down;
+    private hookPositions hook_pos = hookPositions.DOWN;
 
-    private boolean aButtonDown;
-
+    private boolean ButtonDown;
 
     public static class FoundationHookConstants {
 
@@ -42,44 +42,45 @@ public class FoundationHooks {
         realTelemetry = telemetry;
 
         leftFoundationServo = hardwareMap.servo.get("leftFoundationServo");
+        rightFoundationServo = hardwareMap.servo.get("rightFoundationServo");
+
         leftFoundationServo.setDirection(Servo.Direction.REVERSE);
 
-        rightFoundationServo = hardwareMap.servo.get("rightFoundationServo");
     }
 
     public void toggleHooks(boolean inputButton){
-        if (inputButton && !aButtonDown) {
+        if (inputButton && !ButtonDown) {
             switch (hook_pos) {
-                case down:
+                case DOWN:
                     leftFoundationServo.setPosition(FoundationHookConstants.left_open_pos);
                     rightFoundationServo.setPosition(FoundationHookConstants.right_open_pos);
-                    hook_pos = hookPositions.up;
-                    aButtonDown = true;
+                    hook_pos = hookPositions.UP;
+                    ButtonDown = true;
                     break;
-                case up:
+                case UP:
                     leftFoundationServo.setPosition(FoundationHookConstants.left_closed_pos);
                     rightFoundationServo.setPosition(FoundationHookConstants.right_closed_pos);
-                    hook_pos = hookPositions.down;
-                    aButtonDown = true;
+                    hook_pos = hookPositions.DOWN;
+                    ButtonDown = true;
                     break;
             }
         }
 
         if (!inputButton) {
-            aButtonDown = false;
+            ButtonDown = false;
         }
     }
 
     public void open(){
         leftFoundationServo.setPosition(FoundationHookConstants.left_open_pos);
         rightFoundationServo.setPosition(FoundationHookConstants.right_open_pos);
-        hook_pos = hookPositions.up;
+        hook_pos = hookPositions.UP;
     }
 
     public void close(){
         leftFoundationServo.setPosition(FoundationHookConstants.left_closed_pos);
         rightFoundationServo.setPosition(FoundationHookConstants.right_closed_pos);
-        hook_pos = hookPositions.down;
+        hook_pos = hookPositions.DOWN;
     }
 
 }

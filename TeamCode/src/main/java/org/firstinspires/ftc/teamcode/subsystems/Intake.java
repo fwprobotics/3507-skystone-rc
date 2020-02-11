@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import com.qualcomm.hardware.motors.RevRoboticsCoreHexMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,14 +26,14 @@ public class Intake {
     public Telemetry realTelemetry;
 
     public enum intakeStatuses {
-        on, off
+        ON, OFF
     }
     
     public enum intakeDirections {
         FORWARD, REVERSE
     }
 
-    private intakeStatuses intakeStatus = intakeStatuses.off;
+    private intakeStatuses intakeStatus = intakeStatuses.OFF;
     public intakeDirections intakeDirection = intakeDirections.FORWARD;
     private boolean inputButtonPressed;
     private boolean inputButtonPressed2;
@@ -41,7 +43,7 @@ public class Intake {
             MotorConfigurationType.getMotorType(RevRoboticsCoreHexMotor.class);
 
 
-
+    @Config
     public static class IntakeConstants {
         public static double intake_power = -0.9;
 
@@ -70,25 +72,13 @@ public class Intake {
     public void toggleIntake(boolean inputButton){
         if (inputButton && !inputButtonPressed) {
             switch (intakeStatus) {
-                case off:
-                    leftIntakeMotor.setPower(IntakeConstants.intake_power * direction);
-                    rightIntakeMotor.setPower(-0.75 * direction);
-
+                case OFF:
                     inputButtonPressed = true;
-                    intakeStatus = intakeStatuses.on;
-
-                    pusherServoLeft.setPosition(1 * direction);
-                    pusherServoRight.setPosition(1 * direction); // Turn to keep block inside
+                    intakeStatus = intakeStatuses.ON;
                     break;
-                case on:
-                    leftIntakeMotor.setPower(0);
-                    rightIntakeMotor.setPower(0);
-
+                case ON:
                     inputButtonPressed = true;
-                    intakeStatus = intakeStatuses.off;
-
-                    pusherServoLeft.setPosition(0.5); // Stop
-                    pusherServoRight.setPosition(0.5);
+                    intakeStatus = intakeStatuses.OFF;
                     break;
             }
         }
@@ -97,17 +87,35 @@ public class Intake {
             inputButtonPressed = false;
         }
     }
+
+    public void runIntake(){
+        if (intakeStatus == intakeStatuses.ON) {
+            leftIntakeMotor.setPower(IntakeConstants.intake_power * direction);
+            rightIntakeMotor.setPower(-0.75 * direction);
+
+            pusherServoLeft.setPosition(1 * direction);
+            pusherServoRight.setPosition(1 * direction);
+
+        }
+        else if (intakeStatus == intakeStatuses.OFF) {
+            leftIntakeMotor.setPower(0);
+            rightIntakeMotor.setPower(0);
+
+            pusherServoLeft.setPosition(0.5);
+            pusherServoRight.setPosition(0.5);
+        }
+    }
     
     public void reverseIntake(boolean inputButton){
         if (inputButton && !inputButtonPressed2) {
             switch (intakeDirection) {
                 case FORWARD:
-                    direction = 1;
+                    direction = -1;
                     intakeDirection = intakeDirections.REVERSE;
 
                     break;
                 case REVERSE:
-                    direction = -1;
+                    direction = 1;
                     intakeDirection = intakeDirections.FORWARD;
                     break;
             }
@@ -124,7 +132,7 @@ public class Intake {
         pusherServoLeft.setPosition(1);
         pusherServoRight.setPosition(1);
 
-        intakeStatus = intakeStatuses.on;
+        intakeStatus = intakeStatuses.ON;
     }
 
     public void setOff(){
@@ -133,7 +141,7 @@ public class Intake {
         pusherServoLeft.setPosition(0.5);
         pusherServoRight.setPosition(0.5);
 
-        intakeStatus = intakeStatuses.off;
+        intakeStatus = intakeStatuses.OFF;
     }
 
     public void release(){

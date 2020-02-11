@@ -10,16 +10,16 @@ public class Capstone {
 
     public Servo capstoneServo;
 
+    public CapstoneStatuses capstoneStatus;
+
     public LinearOpMode l;
     public Telemetry realTelemetry;
 
-    public enum CapstoneStatus {
-        LOCKED, UNLOCKED
+    public enum CapstoneStatuses {
+        LOCKED,
+        UNLOCKED,
+        PLACED
     }
-
-    public CapstoneStatus capstoneStatus = CapstoneStatus.LOCKED;
-
-    private boolean aButtonDown;
 
     public static class CapstoneConstants {
 
@@ -36,19 +36,25 @@ public class Capstone {
         capstoneServo = hardwareMap.servo.get("capstoneServo");
         capstoneServo.setPosition(CapstoneConstants.up_pos);
 
+        capstoneStatus = CapstoneStatuses.LOCKED;
+
     }
 
-    public void unlockCapstone(boolean inputButton){
-        if (inputButton){
-            capstoneStatus = CapstoneStatus.UNLOCKED;
-        }
-    }
+    public void control(boolean inputButton){
+        if (inputButton) {
+            switch (capstoneStatus){
+                case LOCKED:
+                    capstoneStatus = CapstoneStatuses.UNLOCKED;
+                    realTelemetry.speak("Capstone Unlocked");
+                    break;
 
-    public void placeCapstone(boolean inputButton){
-        if (inputButton && capstoneStatus == CapstoneStatus.UNLOCKED){
-            capstoneServo.setPosition(CapstoneConstants.down_pos);
+                case UNLOCKED:
+                    capstoneServo.setPosition(CapstoneConstants.down_pos);
+                    capstoneStatus = CapstoneStatuses.PLACED;
+                    break;
+
+            }
         }
     }
-    
 
 }

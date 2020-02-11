@@ -22,14 +22,8 @@ public class Lift{
     public Telemetry realTelemetry;
 
     public enum liftRunMode {
-        Autonomous, TeleOp
-    }
-
-
-
-    public static class LiftConstants {
-        //public static double open_pos = 0.5;
-        //public static double closed_pos = 0.85;
+        AUTONOMOUS,
+        TELEOP
     }
 
     public Lift(liftRunMode runmode, LinearOpMode Input, HardwareMap hardwareMap, Telemetry telemetry){
@@ -41,13 +35,13 @@ public class Lift{
         rightLiftMotor = hardwareMap.dcMotor.get("rightLiftMotor");
 
         // Different motor configurations depending on use case
-        if (runmode.equals(liftRunMode.Autonomous)){
+        if (runmode.equals(liftRunMode.AUTONOMOUS)){
             leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // This wont work rn with current encoder setup
             leftLiftMotor.setTargetPosition(0);
             leftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        if (runmode.equals(liftRunMode.TeleOp)){
+        if (runmode.equals(liftRunMode.TELEOP)){
             leftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             leftLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Drivetrain {
 
-    public DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
+    private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
     
     public enum DriveDirections {
         STANDARD, REVERSE
@@ -22,7 +22,7 @@ public class Drivetrain {
     public Telemetry realTelemetry;
     
     public DriveDirections driveDirection = DriveDirections.STANDARD;
-    public int direction = 1;
+    private int direction = 1;
     private boolean inputButtonPressed;
 
     private static final MotorConfigurationType MOTOR_CONFIG =
@@ -83,7 +83,6 @@ public class Drivetrain {
                 case STANDARD:
                     direction = -1;
                     driveDirection = DriveDirections.REVERSE;
-
                     break;
                 case REVERSE:
                     direction = 1;

@@ -25,7 +25,7 @@ public class MecanumDrive extends LinearOpMode {
 
         foundationHooks = new FoundationHooks(this, hardwareMap, telemetry);
         drivetrain = new Drivetrain(this, hardwareMap, telemetry);
-        lift = new Lift(Lift.liftRunMode.TeleOp, this, hardwareMap, telemetry);
+        lift = new Lift(Lift.liftRunMode.TELEOP, this, hardwareMap, telemetry);
         intake = new Intake(this, hardwareMap, telemetry);
         v4b = new V4B(this, hardwareMap, telemetry);
         capstone = new Capstone(this, hardwareMap, telemetry);
@@ -34,7 +34,7 @@ public class MecanumDrive extends LinearOpMode {
         foundationHooks.open();
         v4b.nubSetOpen();
 
-        telemetry.addLine("Ready and waiting");
+        telemetry.addLine("Ready and WAITING");
         telemetry.update();
 
         waitForStart();
@@ -51,20 +51,20 @@ public class MecanumDrive extends LinearOpMode {
                 drivetrain.JoystickMovement(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
                 foundationHooks.toggleHooks(gamepad1.y);
+
                 intake.toggleIntake(gamepad1.b);
                 intake.reverseIntake(gamepad1.a);
+                intake.runIntake();
 
                 lift.teleOpControl(gamepad2.right_stick_y);
 
                 v4b.v4bReleaseOrGrab(gamepad2.a);
-
                 v4b.HighPositionButton(gamepad2.dpad_up);
                 v4b.LowPositionButton(gamepad2.dpad_down);
 
-                v4b.move4Bar(); // This makes the 4-bar move
+                v4b.move4Bar();
                 
-                capstone.unlockCapstone(gamepad1.back);
-                capstone.placeCapstone(gamepad2.back);
+                capstone.control(gamepad2.back);
 
                 telemetry.addData("Capstone Status:", capstone.capstoneStatus);
                 telemetry.addData("State:", v4b.v4bStatus.toString());
