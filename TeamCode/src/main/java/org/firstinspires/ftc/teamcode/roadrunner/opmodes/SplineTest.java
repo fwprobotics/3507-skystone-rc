@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriv
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(group = "roadrunner")
+@Autonomous(group = "tuning")
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

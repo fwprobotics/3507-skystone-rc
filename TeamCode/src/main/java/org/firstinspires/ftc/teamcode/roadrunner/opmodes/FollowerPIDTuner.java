@@ -12,10 +12,11 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriv
  * Op mode for tuning follower PID coefficients (located in the drive base classes). The robot
  * drives in a DISTANCE-by-DISTANCE square indefinitely.
  */
+
 @Config
 @Autonomous(group = "roadrunner")
 public class FollowerPIDTuner extends LinearOpMode {
-    public static double DISTANCE = 48;
+    public static double DISTANCE = 96;
 
     @Override
     public void runOpMode() throws InterruptedException {

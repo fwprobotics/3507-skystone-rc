@@ -28,7 +28,7 @@ public class V4B {
     private boolean nubInputButtonPressed;
 
     public enum v4bStatuses {
-        INSIDE, LOW_SCORING, WAITING, HIGH_SCORING, UP
+        INSIDE, LOW_SCORING, WAITING, HIGH_SCORING
     }
 
     public v4bStatuses v4bStatus = v4bStatuses.INSIDE;
@@ -50,8 +50,7 @@ public class V4B {
         public static double v4b_low_scoring_pos = .89; // Outside robot limit
         public static double v4b_inside_pos = 0.05; // Inside robot limit
         public static double v4b_waiting_pos = 0.17; // Waiting to clamp a block INSIDE the robot
-        public static double v4b_high_scoring_pos = 0.70; // Height for lift DOWN, 3 blocks high
-        public static double v4b_up_pos = 0.6; // Height for mostly straight up, an intermediate step for high scoring (and capstone placing)
+        public static double v4b_high_scoring_pos = 0.7; // Height for lift DOWN, 3 blocks high
 
     }
 
@@ -73,20 +72,20 @@ public class V4B {
 
     }
 
-//    public void nubGrabberControl(boolean inputButton){
-//        if (inputButton && nubHolderServoStatus.equals(NubServoStatuses.CLOSED) && !nubInputButtonPressed) { // Opening
-//            nubHolderServo.setPosition(V4BConstants.nub_open_pos);
-//            nubInputButtonPressed = true;
-//            nubHolderServoStatus = NubServoStatuses.OPEN;
-//        } else if (inputButton && nubHolderServoStatus.equals(NubServoStatuses.OPEN) && !nubInputButtonPressed) { // Closing
-//            nubHolderServo.setPosition(V4BConstants.nub_closed_pos);
-//            nubHolderServoStatus = NubServoStatuses.CLOSED;
-//            nubInputButtonPressed = true;
-//        }
-//        if (!inputButton) {
-//            nubInputButtonPressed = false;
-//        }
-//    }
+    public void nubGrabberControl(boolean inputButton){
+        if (inputButton && nubHolderServoStatus.equals(NubServoStatuses.CLOSED) && !nubInputButtonPressed) { // Opening
+            nubHolderServo.setPosition(V4BConstants.nub_open_pos);
+            nubInputButtonPressed = true;
+            nubHolderServoStatus = NubServoStatuses.OPEN;
+        } else if (inputButton && nubHolderServoStatus.equals(NubServoStatuses.OPEN) && !nubInputButtonPressed) { // Closing
+            nubHolderServo.setPosition(V4BConstants.nub_closed_pos);
+            nubHolderServoStatus = NubServoStatuses.CLOSED;
+            nubInputButtonPressed = true;
+        }
+        if (!inputButton) {
+            nubInputButtonPressed = false;
+        }
+    }
 
     public void nubSetOpen(){
         nubHolderServo.setPosition(V4BConstants.nub_open_pos);
@@ -121,11 +120,6 @@ public class V4B {
         setpos = V4BConstants.v4b_low_scoring_pos;
     }
 
-    public void SetUp(){
-        v4bStatus = v4bStatuses.UP;
-        setpos = V4BConstants.v4b_up_pos;
-    }
-
     // AUTONOMOUS FUNCTIONS
 
     public void AutoGrab(){
@@ -153,7 +147,7 @@ public class V4B {
     }
 
 
-    public void move4Bar(Intake intake){
+    public void move4Bar(){
         double currentPos = servo1.getPosition();
 
         if (currentPos < setpos){
@@ -166,7 +160,6 @@ public class V4B {
 
         if (currentPos < V4BConstants.v4b_inside_pos + .05) {
             nubSetClosed();
-            intake.setOff();
         }
     }
 
@@ -203,15 +196,8 @@ public class V4B {
 
     public void HighPositionButton(boolean inputButton){
         if (inputButton && !HighPositionButtonPressed) {
-            if (v4bStatus != v4bStatuses.UP && v4bStatus != v4bStatuses.HIGH_SCORING){
-                SetUp();
-            }
-
-            else if (v4bStatus == v4bStatuses.UP){
-                SetHighScoring();
-            }
-
-            HighPositionButtonPressed = true;
+            SetHighScoring();
+            v4bInputButtonPressed = true;
         }
 
         if (!inputButton) {

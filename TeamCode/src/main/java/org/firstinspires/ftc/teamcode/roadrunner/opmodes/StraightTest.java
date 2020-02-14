@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriv
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(group = "roadrunner")
+@Autonomous(group = "tuning")
 public class StraightTest extends LinearOpMode {
-    public static double DISTANCE = 60;
+    public static double DISTANCE = 36;
 
     @Override
     public void runOpMode() throws InterruptedException {

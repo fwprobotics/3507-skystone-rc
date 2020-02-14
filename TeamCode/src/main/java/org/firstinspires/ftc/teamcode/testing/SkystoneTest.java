@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.testing;
 
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -11,7 +11,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name="Sample Skystone Detection OpMode")
+@Autonomous(group="testing")
 public class SkystoneTest extends CommandOpMode {
 
     OpenCvCamera camera;

@@ -62,8 +62,8 @@ public class MecanumDrive extends LinearOpMode {
                 v4b.HighPositionButton(gamepad2.dpad_up);
                 v4b.LowPositionButton(gamepad2.dpad_down);
 
-                v4b.move4Bar(intake);
-                
+                v4b.move4Bar();
+
                 capstone.control(gamepad2.back);
 
                 telemetry.addData("Capstone Status:", capstone.capstoneStatus);

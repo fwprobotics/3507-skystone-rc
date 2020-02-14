@@ -43,7 +43,6 @@ public class Intake {
             MotorConfigurationType.getMotorType(RevRoboticsCoreHexMotor.class);
 
 
-    @Config
     public static class IntakeConstants {
         public static double intake_power = -0.9;
 
