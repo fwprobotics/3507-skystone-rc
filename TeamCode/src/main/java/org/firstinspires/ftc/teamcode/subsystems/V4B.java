@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -17,25 +18,32 @@ public class V4B {
     public Servo servo2;
     public Servo nubHolderServo;
 
+    public DigitalChannel intakeSwitch;
+
     public LinearOpMode l;
     public Telemetry realTelemetry;
+    private Intake intake;
 
     public enum NubServoStatuses {
-        OPEN, CLOSED
+        OPEN,
+        CLOSED
     }
 
     public NubServoStatuses nubHolderServoStatus = NubServoStatuses.OPEN;
     private boolean nubInputButtonPressed;
 
     public enum v4bStatuses {
-        INSIDE, LOW_SCORING, WAITING, HIGH_SCORING
+        INSIDE,
+        LOW_SCORING,
+        WAITING,
+        HIGH_SCORING,
+        MIDDLE
     }
 
     public v4bStatuses v4bStatus = v4bStatuses.INSIDE;
     private boolean v4bInputButtonPressed;
     private boolean HighPositionButtonPressed;
     private boolean LowPositionButtonPressed;
-    private boolean ReleaseButtonPressed;
 
     public double setpos;
 
@@ -51,13 +59,16 @@ public class V4B {
         public static double v4b_inside_pos = 0.05; // Inside robot limit
         public static double v4b_waiting_pos = 0.17; // Waiting to clamp a block INSIDE the robot
         public static double v4b_high_scoring_pos = 0.7; // Height for lift DOWN, 3 blocks high
+        public static double v4b_middle_pos = 0.47; // Height for ~straigh up
 
     }
 
-    public V4B(LinearOpMode Input, HardwareMap hardwareMap, Telemetry telemetry){
+    public V4B(LinearOpMode Input, HardwareMap hardwareMap, Telemetry telemetry, Intake m_intake){
 
         l = Input;
         realTelemetry = telemetry;
+        intake = m_intake;
+        intakeSwitch = hardwareMap.digitalChannel.get("intakeSwitch");
 
         nubHolderServo = hardwareMap.servo.get("nubHolderServo"); // Servo to grab block
 
@@ -95,6 +106,7 @@ public class V4B {
     public void nubSetClosed(){
         nubHolderServo.setPosition(V4BConstants.nub_closed_pos);
         nubHolderServoStatus = NubServoStatuses.CLOSED;
+        intake.setOff();
     }
 
     // TELEOP FUNCTIONS
@@ -108,6 +120,11 @@ public class V4B {
     public void Wait(){
         v4bStatus = v4bStatuses.WAITING;
         setpos = V4BConstants.v4b_waiting_pos;
+    }
+
+    public void SetMiddle(){
+        v4bStatus = v4bStatuses.MIDDLE;
+        setpos = V4BConstants.v4b_middle_pos;
     }
 
     public void SetHighScoring(){
@@ -146,6 +163,7 @@ public class V4B {
         servo2.setPosition(V4BConstants.v4b_low_scoring_pos);
     }
 
+    // Actually moving the 4-bar
 
     public void move4Bar(){
         double currentPos = servo1.getPosition();
@@ -158,6 +176,10 @@ public class V4B {
             servo2.setPosition(currentPos - V4BConstants.v4b_speed);
         }
 
+        if (intakeSwitch.getState() && v4bStatus == v4bStatuses.WAITING) {
+            Grab();
+        }
+
         if (currentPos < V4BConstants.v4b_inside_pos + .05) {
             nubSetClosed();
         }
@@ -167,6 +189,8 @@ public class V4B {
         Wait();
         nubSetOpen();
     }
+
+    // Control Functions
 
     public void v4bReleaseOrGrab(boolean inputButton){
         if (inputButton && !v4bInputButtonPressed) {
@@ -196,7 +220,14 @@ public class V4B {
 
     public void HighPositionButton(boolean inputButton){
         if (inputButton && !HighPositionButtonPressed) {
-            SetHighScoring();
+            switch (v4bStatus){
+                case HIGH_SCORING:
+                    SetMiddle();
+                    break;
+
+                default:
+                    SetHighScoring();
+            }
             v4bInputButtonPressed = true;
         }
 
