@@ -27,8 +27,8 @@ public class MecanumDrive extends LinearOpMode {
         drivetrain = new Drivetrain(this, hardwareMap, telemetry);
         lift = new Lift(Lift.liftRunMode.TELEOP, this, hardwareMap, telemetry);
         intake = new Intake(this, hardwareMap, telemetry);
-        v4b = new V4B(this, hardwareMap, telemetry);
-        capstone = new Capstone(this, hardwareMap, telemetry);
+        v4b = new V4B(this, hardwareMap, telemetry, intake);
+        capstone = new Capstone(this, hardwareMap, telemetry, v4b);
 
         // Ensuring correct subsystem statuses
         foundationHooks.open();
@@ -53,7 +53,7 @@ public class MecanumDrive extends LinearOpMode {
                 foundationHooks.toggleHooks(gamepad1.y);
 
                 intake.toggleIntake(gamepad1.b);
-                intake.reverseIntake(gamepad1.a);
+                intake.directionControl(gamepad1.a);
                 intake.runIntake();
 
                 lift.teleOpControl(gamepad2.right_stick_y);
@@ -61,6 +61,7 @@ public class MecanumDrive extends LinearOpMode {
                 v4b.v4bReleaseOrGrab(gamepad2.a);
                 v4b.HighPositionButton(gamepad2.dpad_up);
                 v4b.LowPositionButton(gamepad2.dpad_down);
+                v4b.nubGrabberControl(gamepad2.dpad_right);
 
                 v4b.move4Bar();
 
