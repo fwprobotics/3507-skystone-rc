@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.acmerobotics.dashboard.config.Config;
-
 import com.qualcomm.hardware.motors.RevRoboticsCoreHexMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -36,7 +34,6 @@ public class Intake {
     private intakeStatuses intakeStatus = intakeStatuses.OFF;
     public intakeDirections intakeDirection = intakeDirections.FORWARD;
     private boolean inputButtonPressed;
-    private boolean inputButtonPressed2;
     private int direction = 1;
 
     private static final MotorConfigurationType MOTOR_CONFIG =
@@ -105,24 +102,15 @@ public class Intake {
         }
     }
     
-    public void reverseIntake(boolean inputButton){
-        if (inputButton && !inputButtonPressed2) {
-            switch (intakeDirection) {
-                case FORWARD:
-                    direction = -1;
-                    intakeDirection = intakeDirections.REVERSE;
-
-                    break;
-                case REVERSE:
-                    direction = 1;
-                    intakeDirection = intakeDirections.FORWARD;
-                    break;
-            }
-        }
-
+    public void directionControl(boolean inputButton) {
         if (!inputButton) {
-            inputButtonPressed2 = false;
+            direction = 1;
+            intakeDirection = intakeDirections.FORWARD;
+        } else {
+            direction = -1;
+            intakeDirection = intakeDirections.REVERSE;
         }
+
     }
 
     public void setOn(){
