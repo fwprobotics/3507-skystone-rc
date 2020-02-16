@@ -50,7 +50,7 @@ public class V4B {
 
     public static class V4BConstants {
 
-        public static double v4b_speed = 0.007; // How much to move V4B servos each loop
+        public static double v4b_speed = 0.008; // How much to move V4B servos each loop
 
         public static double nub_open_pos = 0.32;
         public static double nub_closed_pos = 0;
@@ -60,6 +60,7 @@ public class V4B {
         public static double v4b_waiting_pos = 0.17; // Waiting to clamp a block INSIDE the robot
         public static double v4b_high_scoring_pos = 0.7; // Height for lift DOWN, 3 blocks high
         public static double v4b_middle_pos = 0.47; // Height for ~straigh up
+        public static double v4b_under_skybridge_pos = 0.80; // Height to go under skybridge
 
     }
 
@@ -163,6 +164,11 @@ public class V4B {
         servo2.setPosition(V4BConstants.v4b_low_scoring_pos);
     }
 
+    public void AutoSetUnderSkybridge(){
+        servo1.setPosition(V4BConstants.v4b_under_skybridge_pos);
+        servo2.setPosition(V4BConstants.v4b_under_skybridge_pos);
+    }
+
     // Actually moving the 4-bar
 
     public void move4Bar(){
@@ -220,14 +226,7 @@ public class V4B {
 
     public void HighPositionButton(boolean inputButton){
         if (inputButton && !HighPositionButtonPressed) {
-            switch (v4bStatus){
-                case HIGH_SCORING:
-                    SetMiddle();
-                    break;
-
-                default:
-                    SetHighScoring();
-            }
+            SetHighScoring();
             v4bInputButtonPressed = true;
         }
 
@@ -235,6 +234,23 @@ public class V4B {
             HighPositionButtonPressed = false;
         }
     }
+
+
+//        if (inputButton && !HighPositionButtonPressed) {
+//            switch (v4bStatus){
+//                case HIGH_SCORING:
+//                    SetMiddle();
+//                    break;
+//
+//                default:
+//                    SetHighScoring();
+//            }
+//            v4bInputButtonPressed = true;
+//        }
+//
+//        if (!inputButton) {
+//            HighPositionButtonPressed = false;
+//        }
 
     public void LowPositionButton(boolean inputButton){
         if (inputButton && !LowPositionButtonPressed) {
