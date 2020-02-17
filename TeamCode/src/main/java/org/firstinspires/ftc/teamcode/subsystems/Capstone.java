@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import org.firstinspires.ftc.teamcode.subsystems.V4B;
-
 public class Capstone {
 
     public Servo capstoneServo;
@@ -67,6 +65,10 @@ public class Capstone {
                 }
 
             }
+        }
+
+        else {
+            inputButtonPressed = false;
         }
 
     }
