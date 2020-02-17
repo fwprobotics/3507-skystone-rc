@@ -170,7 +170,6 @@ public class V4B {
     }
 
     // Actually moving the 4-bar
-
     public void move4Bar(){
         double currentPos = servo1.getPosition();
 
@@ -234,23 +233,6 @@ public class V4B {
             HighPositionButtonPressed = false;
         }
     }
-
-
-//        if (inputButton && !HighPositionButtonPressed) {
-//            switch (v4bStatus){
-//                case HIGH_SCORING:
-//                    SetMiddle();
-//                    break;
-//
-//                default:
-//                    SetHighScoring();
-//            }
-//            v4bInputButtonPressed = true;
-//        }
-//
-//        if (!inputButton) {
-//            HighPositionButtonPressed = false;
-//        }
 
     public void LowPositionButton(boolean inputButton){
         if (inputButton && !LowPositionButtonPressed) {

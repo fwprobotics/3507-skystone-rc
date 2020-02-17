@@ -22,7 +22,6 @@ public class SkystoneTest extends CommandOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         camera.openCameraDevice();
-
         pipeline = new SkystoneDetector();
 
         camera.setPipeline(pipeline);
@@ -36,10 +35,13 @@ public class SkystoneTest extends CommandOpMode {
 
         switch (position) {
             case LEFT_STONE:
+                telemetry.addLine("Left");
                 break;
             case CENTER_STONE:
+                telemetry.addLine("Middle");
                 break;
             case RIGHT_STONE:
+                telemetry.addLine("Right");
                 break;
             default:
                 break;

@@ -17,18 +17,20 @@ and set control for autonomous. By Jake, 1/27/20.
 
 public class Intake {
 
-    public DcMotor leftIntakeMotor, rightIntakeMotor;
-    public Servo pusherServoLeft;
-    public Servo pusherServoRight;
-    public LinearOpMode l;
-    public Telemetry realTelemetry;
+    private DcMotor leftIntakeMotor, rightIntakeMotor;
+    private Servo pusherServoLeft;
+    private Servo pusherServoRight;
+    private LinearOpMode l;
+    private Telemetry realTelemetry;
 
     public enum intakeStatuses {
-        ON, OFF
+        ON,
+        OFF
     }
     
     public enum intakeDirections {
-        FORWARD, REVERSE
+        FORWARD,
+        REVERSE
     }
 
     private intakeStatuses intakeStatus = intakeStatuses.OFF;
@@ -54,9 +56,9 @@ public class Intake {
 
         leftIntakeMotor = hardwareMap.dcMotor.get("leftIntakeMotor");
         rightIntakeMotor = hardwareMap.dcMotor.get("rightIntakeMotor");
+
         pusherServoLeft = hardwareMap.servo.get("rubberServoLeft");
         pusherServoRight = hardwareMap.servo.get("rubberServoRight");
-
 
         leftIntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightIntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -65,6 +67,9 @@ public class Intake {
 
     }
 
+    // TELEOP FUNCTIONS
+
+    // Toggle on and off intake via inputButton
     public void toggleIntake(boolean inputButton){
         if (inputButton && !inputButtonPressed) {
             switch (intakeStatus) {
@@ -84,6 +89,7 @@ public class Intake {
         }
     }
 
+    // Sets power of intake depending on direction
     public void runIntake(){
         if (intakeStatus == intakeStatuses.ON) {
             leftIntakeMotor.setPower(IntakeConstants.intake_power * direction);
@@ -101,7 +107,8 @@ public class Intake {
             pusherServoRight.setPosition(0.5);
         }
     }
-    
+
+    // While input button is held down intake is reversed
     public void directionControl(boolean inputButton) {
         if (!inputButton) {
             direction = 1;
@@ -112,6 +119,8 @@ public class Intake {
         }
 
     }
+
+    // AUTONOMOUS FUNCTIONS
 
     public void setOn(){
         leftIntakeMotor.setPower(IntakeConstants.intake_power);
