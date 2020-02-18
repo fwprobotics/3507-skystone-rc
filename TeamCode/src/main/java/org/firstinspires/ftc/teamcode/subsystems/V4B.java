@@ -79,8 +79,11 @@ public class V4B {
         servo1.setPosition(V4BConstants.v4b_inside_pos);
         servo2.setPosition(V4BConstants.v4b_inside_pos);
 
-        Grab();
+        AutoWait();
+        l.sleep(500);
         nubSetOpen();
+        l.sleep(250);
+        AutoGrab();
 
     }
 

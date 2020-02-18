@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.V4B;
 import org.firstinspires.ftc.teamcode.subsystems.Capstone;
+import org.firstinspires.ftc.teamcode.subsystems.Ziptie;
 
 @TeleOp(name = "MecanumDrive", group = "TeleOp")
 public class MecanumDrive extends LinearOpMode {
@@ -19,6 +20,7 @@ public class MecanumDrive extends LinearOpMode {
     Intake intake;
     V4B v4b;
     Capstone capstone;
+    Ziptie ziptie;
 
     @Override
     public void runOpMode() {
@@ -29,12 +31,13 @@ public class MecanumDrive extends LinearOpMode {
         intake = new Intake(this, hardwareMap, telemetry);
         v4b = new V4B(this, hardwareMap, telemetry, intake);
         capstone = new Capstone(this, hardwareMap, telemetry, v4b);
+        ziptie = new Ziptie(this, hardwareMap, telemetry);
 
         // Ensuring correct subsystem statuses
         foundationHooks.open();
         v4b.nubSetOpen();
 
-        telemetry.addLine("Ready and WAITING");
+        telemetry.addLine("Ready and WAITING :)");
         telemetry.update();
 
         waitForStart();
@@ -55,6 +58,8 @@ public class MecanumDrive extends LinearOpMode {
                 intake.toggleIntake(gamepad1.b);
                 intake.directionControl(gamepad1.a);
                 intake.runIntake();
+
+                ziptie.control(gamepad1.left_bumper);
 
                 lift.teleOpControl(gamepad2.right_stick_y);
 
