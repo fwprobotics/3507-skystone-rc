@@ -124,7 +124,7 @@ public class Intake {
 
     public void setOn(){
         leftIntakeMotor.setPower(IntakeConstants.intake_power);
-        rightIntakeMotor.setPower(-0.85);
+        rightIntakeMotor.setPower(-0.75);
         pusherServoLeft.setPosition(1);
         pusherServoRight.setPosition(1);
 

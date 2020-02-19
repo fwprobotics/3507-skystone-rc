@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
 
@@ -20,6 +21,7 @@ import kotlin.Unit;
 @Autonomous(name = "Red Auto", group = "autonomous")
 public class RedAuto extends LinearOpMode {
 
+    // Subsystems
     FoundationHooks hooks;
     Intake intake;
     V4B v4b;
@@ -68,21 +70,38 @@ public class RedAuto extends LinearOpMode {
 
         // Middle stone
 
-        public static double a_middle_stone_x_firstpos = 26.5;
-        public static double a_middle_stone_y_firstpos = -8.52;
+        static double a_middle_stone_x_firstpos = 27.5;
+        static double a_middle_stone_y_firstpos = -8.52;
 
-        public static double b_second_middle_stone_x_pos = 39;
-        public static double b_second_middle_stone_y_pos = -7;
-        public static double b_second_middle_stone_turn = 34.5;
+        static double b_second_middle_stone_x_pos = 40.5;
+        static double b_second_middle_stone_y_pos = -7;
+        static double b_second_middle_stone_turn = 32;
 
-        public static double c_middle_stone_little_backup = 5;
+        static double c_middle_stone_little_backup = 5;
 
-        public static double d_forward_to_second_middle_stone_distance = 35;
+        static double d_forward_to_second_middle_stone_distance = 35;
 
-        public static double e_far_middle_forward_amount = 17;
-        public static double e_far_middle_strafe_amount = 18;
+        static double e_far_middle_forward_amount = 17;
+        static double e_far_middle_strafe_amount = 17;
 
-        public static double f_after_strafe_amount = 7;
+        static double f_after_strafe_amount = 6;
+
+        // Right stone
+
+        public static double a_right_stone_x_firstpos = 23;
+        public static double a_right_stone_y_firstpos = -19;
+
+        public static double b_second_right_stone_turn = 30;
+        public static double b_second_right_stone_forward = 10;
+
+        public static double c_right_stone_little_backup = 5;
+
+        public static double d_forward_to_second_right_stone_distance = 32;
+
+        public static double e_far_right_forward_amount = 18;
+        public static double e_far_right_strafe_amount = 20;
+
+        public static double f_right_strafe_amount = 6;
 
     }
 
@@ -94,8 +113,6 @@ public class RedAuto extends LinearOpMode {
         v4b = new V4B(this, hardwareMap, telemetry, intake);
         capstone = new Capstone(this, hardwareMap, telemetry, v4b);
 
-        stonepos = StonePostitions.MIDDLE;
-
         hooks.open();
         v4b.nubSetOpen();
 
@@ -103,8 +120,9 @@ public class RedAuto extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        /* START MOVECODE */
         drive.setPoseEstimate(new Pose2d(0, -8.52, 0));
+        /* START MOVECODE */
+
         intake.release();
 
         switch(stonepos) {
@@ -240,11 +258,10 @@ public class RedAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                                 .addMarker(0.5, ()->{v4b.AutoWait();return Unit.INSTANCE;})
                                 .strafeTo(new Vector2d(redAutoConstants.a_middle_stone_x_firstpos, redAutoConstants.a_middle_stone_y_firstpos))
+                                .back(1.5)
                                 .build()
 
                 );
-
-                sleep(500);
 
                 // Turn to face stone
                 drive.turnSync(Math.toRadians(redAutoConstants.b_second_middle_stone_turn));
@@ -253,16 +270,11 @@ public class RedAuto extends LinearOpMode {
                 // Drive forward to collect stone
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .strafeRight(7)
-                                .forward(8)
-//                                .strafeTo(new Vector2d(redAutoConstants.b_second_middle_stone_x_pos, redAutoConstants.b_second_middle_stone_y_pos))
-                                //.addMarker(0.7, ()->{intake.setOnReversed(); return Unit.INSTANCE;})
-                                //.addMarker(0.9, ()->{intake.setOff(); return Unit.INSTANCE;})
-                                //.addMarker(0.92, ()->{intake.setOn(); return Unit.INSTANCE;})
+                                .strafeTo(new Vector2d(redAutoConstants.b_second_middle_stone_x_pos, redAutoConstants.b_second_middle_stone_y_pos))
                                 .build()
                 );
 
-                sleep(3000);
+                sleep(450);
 
                 // Back off the stone
                 drive.followTrajectorySync(
@@ -272,7 +284,7 @@ public class RedAuto extends LinearOpMode {
                 );
 
                 // Inital turn away from stones
-                drive.turnSync(Math.toRadians(redAutoConstants.under_skybridge_spline_heading - 60));
+                drive.turnSync(Math.toRadians(redAutoConstants.under_skybridge_spline_heading - 80));
 
                 // Splining to sit under bridge
                 drive.followTrajectorySync(
@@ -307,7 +319,7 @@ public class RedAuto extends LinearOpMode {
                 // Pull foundation to the right spot (~under the skybridge) and place the skystone
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 0.7, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
+                                .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 1.2, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
                                 .addMarker(0.3, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
                                 .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
                                 .build()
@@ -320,7 +332,7 @@ public class RedAuto extends LinearOpMode {
 
                 sleep(400);
 
-                // Driving to far left block
+                // Driving to far middle block
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .forward(redAutoConstants.d_forward_to_second_middle_stone_distance)
@@ -346,7 +358,7 @@ public class RedAuto extends LinearOpMode {
                 // Placing the second stone and driving backwards
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(50)
+                                .back(47)
                                 .addMarker(0.8, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
                                 .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
                                 .addMarker(1.9, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
@@ -364,14 +376,122 @@ public class RedAuto extends LinearOpMode {
                 break;
 
             case RIGHT:
-//                drive.followTrajectorySync(
-//                        drive.trajectoryBuilder()
-//                                .addMarker(0.2, ()->{intake.setOn();return Unit.INSTANCE;})
-//                                .addMarker(0.5, ()->{v4b.AutoWait();return Unit.INSTANCE;})
-//                                .strafeTo(new Vector2d(redAutoConstants.right_stone_x_pos, redAutoConstants.right_stone_y_pos))
-//                                .build()
-//
-//                );
+                // Making first drive up
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .addMarker(0.5, ()->{v4b.AutoWait();return Unit.INSTANCE;})
+                                .strafeTo(new Vector2d(redAutoConstants.a_right_stone_x_firstpos, redAutoConstants.a_right_stone_y_firstpos))
+                                .build()
+
+                );
+
+                // Turn to face stone
+                drive.turnSync(Math.toRadians(redAutoConstants.b_second_right_stone_turn));
+                intake.setOn();
+
+                // Drive forward to collect stone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(redAutoConstants.b_second_right_stone_forward)
+                                .build()
+                );
+
+                sleep(300);
+
+                // Back off the stone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .back(redAutoConstants.c_right_stone_little_backup)
+                                .build()
+                );
+
+                // Splining to sit under bridge
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .addMarker(0.8, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                                .addMarker(0.9, ()->{intake.setOff();return Unit.INSTANCE;})
+                                .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading)))
+                                .build()
+                );
+
+                // Splining to the foundation
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y, Math.toRadians(redAutoConstants.foundation_heading)))
+                                .build()
+
+                );
+
+                // Back into foundation and grab on
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .addMarker(0.4, ()->{hooks.close();return Unit.INSTANCE;})
+                                .back(5)
+                                .build()
+                );
+
+                sleep(300); // Wait for hooks to close
+
+                // Pull foundation to the right spot (~under the skybridge) and place the skystone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 1.2, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
+                                .addMarker(0.3, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
+                                .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
+                                .build()
+
+                );
+
+                // Releasing foundation and setting 4-bar so we can drive under skybridge
+                hooks.open();
+                v4b.AutoSetUnderSkybridge();
+
+                sleep(400);
+
+                // Driving to far right block
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(redAutoConstants.d_forward_to_second_right_stone_distance)
+                                .strafeRight(redAutoConstants.e_far_right_strafe_amount)
+                                .forward(redAutoConstants.e_far_right_forward_amount)
+                                .addMarker(0.8, ()->{intake.setOn(); return Unit.INSTANCE;})
+                                .addMarker(1.2, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                                .build()
+                );
+
+                // Going back to the foundation
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .strafeLeft(23)
+                                .addMarker(1.3, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                                .addMarker(1.7, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .addMarker(2.4, ()->{intake.setOff();return Unit.INSTANCE;})
+                                .strafeTo(new Vector2d(redAutoConstants.under_skybridge_spline_x - 1, redAutoConstants.under_skybrige_spline_y))
+                                .strafeRight(redAutoConstants.f_right_strafe_amount)
+                                .build()
+                );
+
+                // Placing the second stone and driving backwards
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .back(47)
+                                .addMarker(0.8, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
+                                .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
+                                .addMarker(1.9, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                                .build()
+                );
+
+                // Driving back under the skybridge to park
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .lineTo(new Vector2d(redAutoConstants.under_skybridge_spline_x, redAutoConstants.under_skybrige_spline_y))
+                                .build()
+                );
 
                 break;
         }
