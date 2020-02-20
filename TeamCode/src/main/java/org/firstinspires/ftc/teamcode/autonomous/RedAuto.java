@@ -93,7 +93,7 @@ public class RedAuto extends LinearOpMode {
 
         public static double d_forward_to_second_middle_stone_distance = 42;
 
-        public static double e_far_middle_forward_amount = 9;
+        public static double e_far_middle_forward_amount = 19;
         public static double e_far_middle_strafe_amount = 17;
 
         static double f_after_strafe_amount = 6;
