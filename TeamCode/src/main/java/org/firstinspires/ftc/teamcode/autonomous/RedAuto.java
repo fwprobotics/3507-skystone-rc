@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
@@ -27,7 +29,11 @@ public class RedAuto extends LinearOpMode {
     V4B v4b;
     Capstone capstone;
 
+    // Stone vision stuff
+    private VuforiaSkyStone vuforiaSkyStone;
     StonePostitions stonepos;
+    int counter;
+    private double stoneTargetPosition;
 
     public enum StonePostitions{
         LEFT,
@@ -40,19 +46,19 @@ public class RedAuto extends LinearOpMode {
 
         // Left stone variables
 
-        static double first_left_stone_x_pos = 27;
-        static double first_left_stone_y_pos = -3;
+        public static double first_left_stone_x_pos = 29;
+        public static double first_left_stone_y_pos = -2.5;
 
-        static double second_left_stone_x_pos = 39;
-        static double second_left_stone_y_pos = 3;
-        static double second_left_stone_turn = 45;
+        public static double second_left_stone_x_pos = 32;
+        public static double second_left_stone_y_pos = 4;
+        public static double second_left_stone_turn = 37;
 
-        static double forward_to_second_stone_distance = 44;
+        public static double forward_to_second_stone_distance = 40;
 
-        static double left_stone_little_backup_dist = 7;
+        public static double left_stone_little_backup_dist = 7;
 
-        static double far_left_forward_amount = 14;
-        static double far_left_strafe_amount = 15;
+        public static double far_left_forward_amount = 17;
+        public static double far_left_strafe_amount = 15;
 
         // General
 
@@ -88,33 +94,46 @@ public class RedAuto extends LinearOpMode {
 
         // Right stone
 
-        public static double a_right_stone_x_firstpos = 23;
-        public static double a_right_stone_y_firstpos = -19;
+         static double a_right_stone_x_firstpos = 23;
+         static double a_right_stone_y_firstpos = -19;
 
-        public static double b_second_right_stone_turn = 30;
-        public static double b_second_right_stone_forward = 10;
+         static double b_second_right_stone_turn = 30;
+         static double b_second_right_stone_forward = 10;
 
-        public static double c_right_stone_little_backup = 5;
+         static double c_right_stone_little_backup = 5;
 
-        public static double d_forward_to_second_right_stone_distance = 32;
+         static double d_forward_to_second_right_stone_distance = 32;
 
-        public static double e_far_right_forward_amount = 18;
-        public static double e_far_right_strafe_amount = 20;
+         static double e_far_right_forward_amount = 18;
+         static double e_far_right_strafe_amount = 20;
 
-        public static double f_right_strafe_amount = 6;
+         static double f_right_strafe_amount = 6;
 
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
+        vuforiaSkyStone = new VuforiaSkyStone();
+
+        // Subsystems
         hooks = new FoundationHooks(this, hardwareMap, telemetry);
         intake = new Intake(this, hardwareMap, telemetry);
         v4b = new V4B(this, hardwareMap, telemetry, intake);
         capstone = new Capstone(this, hardwareMap, telemetry, v4b);
 
-        hooks.open();
+        // Ensuring correct statuses
         v4b.nubSetOpen();
+        hooks.open();
+
+        // Starting up vuforia
+        telemetry.addData("Status", "Initializing Vuforia. Please wait...");
+        telemetry.update();
+        initVuforia();
+
+        vuforiaSkyStone.activate();
+        telemetry.addData(">>", "Vuforia initialized, press start to begin...");
+        telemetry.update();
 
         waitForStart();
 
@@ -125,49 +144,31 @@ public class RedAuto extends LinearOpMode {
 
         intake.release();
 
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .forward(14)
+                        .build()
+        );
+
+        locateSkystone();
+
+
         switch(stonepos) {
             case LEFT:
 
-                // Making first drive up
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .addMarker(0.5, ()->{v4b.AutoWait();return Unit.INSTANCE;})
-                                .strafeTo(new Vector2d(redAutoConstants.first_left_stone_x_pos, redAutoConstants.first_left_stone_y_pos))
-                                .build()
-
-                );
-
-                sleep(500);
-
-                // Turn to face stone
-                drive.turnSync(Math.toRadians(redAutoConstants.second_left_stone_turn));
-                intake.setOn();
-                // Drive forward to collect stone
-                drive.followTrajectorySync(
-                        drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(redAutoConstants.second_left_stone_x_pos, redAutoConstants.second_left_stone_y_pos))
+                            .strafeRight(redAutoConstants.first_left_stone_x_pos)
                             .build()
                 );
-
-                sleep(200);
-
-                // Back off the stone
-                drive.followTrajectorySync(
-                        drive.trajectoryBuilder()
-                            .back(redAutoConstants.left_stone_little_backup_dist)
-                            .build()
-                );
-
-                // Inital turn away from stones
-                drive.turnSync(Math.toRadians(redAutoConstants.under_skybridge_spline_heading));
 
                 // Splining to sit under bridge
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                             .reverse()
-                            .addMarker(1.8, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                            .addMarker(1.6, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
                             .addMarker(2.0, ()->{intake.setOff();return Unit.INSTANCE;})
-                            .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading)))
+                            .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x + 1, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading)))
                             .build()
                 );
 
@@ -194,7 +195,7 @@ public class RedAuto extends LinearOpMode {
                 // Pull foundation to the right spot (~under the skybridge) and place the skystone
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(redAutoConstants.foundation_turn_x + 2, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
+                            .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 1, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
                                 .addMarker(0.3, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
                                 .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
                             .build()
@@ -212,9 +213,14 @@ public class RedAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                             .forward(redAutoConstants.forward_to_second_stone_distance)
                             .strafeRight(redAutoConstants.far_left_strafe_amount)
-                            .forward(redAutoConstants.far_left_forward_amount)
                                 .addMarker(1.2, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
                                 .addMarker(0.8, ()->{intake.setOn(); return Unit.INSTANCE;})
+                            .build()
+                );
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                            .forward(redAutoConstants.far_left_forward_amount)
                             .build()
                 );
 
@@ -343,7 +349,6 @@ public class RedAuto extends LinearOpMode {
                                 .build()
                 );
 
-                // Splining back to the foundation
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .reverse()
@@ -351,7 +356,7 @@ public class RedAuto extends LinearOpMode {
                                 .addMarker(2.2, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
                                 .addMarker(2.4, ()->{intake.setOff();return Unit.INSTANCE;})
                                 .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x + 1, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading)))
-                                .strafeRight(redAutoConstants.f_after_strafe_amount)
+                                .strafeRight(redAutoConstants.f_after_strafe_amount + 1.5)
                                 .build()
                 );
 
@@ -497,4 +502,51 @@ public class RedAuto extends LinearOpMode {
         }
 
     }
+
+    private void initVuforia() {
+        vuforiaSkyStone.initialize(
+                "", // vuforiaLicenseKey
+                VuforiaLocalizer.CameraDirection.BACK, // cameraDirection
+                true, // useExtendedTracking
+                true, // enableCameraMonitoring
+                VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES, // cameraMonitorFeedback
+                0, // dx
+                0, // dy
+                0, // dz
+                0, // xAngle
+                -90, // yAngle
+                0, // zAngle
+                true); // useCompetitionFieldTargetLocations
+    }
+
+    private void locateSkystone() {
+        while (!vuforiaSkyStone.track("Stone Target").isVisible && counter <= 450) {
+            sleep(5);
+            counter = counter + 1;
+        }
+
+        if (vuforiaSkyStone.track("Stone Target").isVisible) {
+            stoneTargetPosition = vuforiaSkyStone.track("Stone Target").y;
+            telemetry.addData("Pixels from left:", Double.parseDouble(JavaUtil.formatNumber(stoneTargetPosition, 2)));
+            telemetry.addData("No Targets Detected", "Targets are not visible.");
+        } else {
+            stoneTargetPosition = 10000.0;
+        }
+
+        if (stoneTargetPosition < -100) {
+            stonepos = StonePostitions.MIDDLE;
+        }
+        if (stoneTargetPosition > 0 && stoneTargetPosition < 500.0) {
+            stonepos = StonePostitions.RIGHT;
+        } else if (stoneTargetPosition == 10000.0) {
+            stonepos = StonePostitions.LEFT;
+        }
+
+        telemetry.clearAll();
+        telemetry.addData("Stone pos:", stonepos);
+        telemetry.update();
+        vuforiaSkyStone.deactivate();
+        vuforiaSkyStone.close();
+    }
+
 }

@@ -123,7 +123,7 @@ public class Intake {
     // AUTONOMOUS FUNCTIONS
 
     public void setOn(){
-        leftIntakeMotor.setPower(IntakeConstants.intake_power);
+        leftIntakeMotor.setPower(-0.9);
         rightIntakeMotor.setPower(-0.75);
         pusherServoLeft.setPosition(1);
         pusherServoRight.setPosition(1);

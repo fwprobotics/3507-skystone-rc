@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -47,20 +48,20 @@ public class V4B {
 
     public double setpos;
 
-
+    @Config
     public static class V4BConstants {
 
-        public static double v4b_speed = 0.008; // How much to move V4B servos each loop
+        public static double v4b_speed = 0.011; // How much to move V4B servos each loop
 
-        public static double nub_open_pos = 0.32;
-        public static double nub_closed_pos = 0;
+        public static double nub_open_pos = 0.33;
+        public static double nub_closed_pos = 0.05;
 
-        public static double v4b_low_scoring_pos = .89; // Outside robot limit
+        public static double v4b_low_scoring_pos = 0.92; // Outside robot limit
         public static double v4b_inside_pos = 0.05; // Inside robot limit
-        public static double v4b_waiting_pos = 0.17; // Waiting to clamp a block INSIDE the robot
-        public static double v4b_high_scoring_pos = 0.7; // Height for lift DOWN, 3 blocks high
+        public static double v4b_waiting_pos = 0.23; // Waiting to clamp a block INSIDE the robot
+        public static double v4b_high_scoring_pos = 0.75; // Height for lift DOWN, 3 blocks high
         public static double v4b_middle_pos = 0.47; // Height for ~straigh up
-        public static double v4b_under_skybridge_pos = 0.80; // Height to go under skybridge
+        public static double v4b_under_skybridge_pos = 0.85; // Height to go under skybridge
 
     }
 
