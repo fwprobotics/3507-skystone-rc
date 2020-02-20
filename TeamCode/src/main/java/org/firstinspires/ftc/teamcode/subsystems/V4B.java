@@ -54,7 +54,7 @@ public class V4B {
         public static double v4b_speed = 0.011; // How much to move V4B servos each loop
 
         public static double nub_open_pos = 0.33;
-        public static double nub_closed_pos = 0.05;
+        public static double nub_closed_pos = 0;
 
         public static double v4b_low_scoring_pos = 0.92; // Outside robot limit
         public static double v4b_inside_pos = 0.05; // Inside robot limit
@@ -80,8 +80,6 @@ public class V4B {
         servo1.setPosition(V4BConstants.v4b_inside_pos);
         servo2.setPosition(V4BConstants.v4b_inside_pos);
 
-        AutoWait();
-        l.sleep(500);
         nubSetOpen();
         l.sleep(250);
         AutoGrab();

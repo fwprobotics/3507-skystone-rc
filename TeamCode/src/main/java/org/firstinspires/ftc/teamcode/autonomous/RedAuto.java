@@ -1,16 +1,18 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
 
 import org.firstinspires.ftc.teamcode.subsystems.Capstone;
 import org.firstinspires.ftc.teamcode.subsystems.FoundationHooks;
@@ -47,7 +49,7 @@ public class RedAuto extends LinearOpMode {
         // Left stone variables
 
         public static double first_turn_amount = 90;
-        public static double first_strafe_amount = 15;
+        public static double first_strafe_amount = 28;
         public static double second_forward_amount = 5;
 
          static double first_left_stone_x_pos = 29;
@@ -61,8 +63,8 @@ public class RedAuto extends LinearOpMode {
 
         public static double left_stone_little_backup_dist = 7;
 
-        public static double far_left_forward_amount = 17;
-        public static double far_left_strafe_amount = 15;
+        public static double far_left_forward_amount = 12;
+        public static double far_left_strafe_amount = 22;
 
         // General
 
@@ -89,10 +91,10 @@ public class RedAuto extends LinearOpMode {
 
         static double c_middle_stone_little_backup = 5;
 
-        static double d_forward_to_second_middle_stone_distance = 35;
+        public static double d_forward_to_second_middle_stone_distance = 42;
 
-        static double e_far_middle_forward_amount = 17;
-        static double e_far_middle_strafe_amount = 17;
+        public static double e_far_middle_forward_amount = 9;
+        public static double e_far_middle_strafe_amount = 17;
 
         static double f_after_strafe_amount = 6;
 
@@ -106,7 +108,7 @@ public class RedAuto extends LinearOpMode {
 
          static double c_right_stone_little_backup = 5;
 
-         static double d_forward_to_second_right_stone_distance = 32;
+         static double d_forward_to_second_right_stone_distance = 26;
 
          static double e_far_right_forward_amount = 18;
          static double e_far_right_strafe_amount = 20;
@@ -136,7 +138,7 @@ public class RedAuto extends LinearOpMode {
         initVuforia();
 
         vuforiaSkyStone.activate();
-        telemetry.addData(">>", "Vuforia initialized, press start to begin...");
+        telemetry.addData(">>", "Vuforia initialized, press START to begin autonomous, and hope it works :)");
         telemetry.update();
 
         waitForStart();
@@ -162,11 +164,12 @@ public class RedAuto extends LinearOpMode {
 
                 v4b.AutoWait();
                 // Turning to be parallel to blocks
-                drive.turnSync(redAutoConstants.first_turn_amount);
+                drive.turnSync(Math.toRadians(redAutoConstants.first_turn_amount));
 
                 // Strafing to line up with the left block (pushing the other two away)
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
+                            .back(1.5)
                             .strafeRight(redAutoConstants.first_strafe_amount)
                             .build()
                 );
@@ -177,7 +180,7 @@ public class RedAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                             .forward(redAutoConstants.second_forward_amount)
-                            .strafeLeft(redAutoConstants.first_strafe_amount)
+                            .strafeLeft(redAutoConstants.first_strafe_amount - 5)
                             .build()
                 );
 
@@ -185,18 +188,20 @@ public class RedAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                             .reverse()
-                            .addMarker(1.6, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                            .addMarker(1.4, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
                             .addMarker(2.0, ()->{intake.setOff();return Unit.INSTANCE;})
-                            .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x + 1, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading)))
+                            .splineTo(new Pose2d(redAutoConstants.under_skybridge_spline_x + 1, redAutoConstants.under_skybrige_spline_y, Math.toRadians(redAutoConstants.under_skybridge_spline_heading + 2)))
                             .build()
                 );
+
+                sleep(200);
 
                 // Splining to the foundation
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .reverse()
                                 .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
-                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y, Math.toRadians(redAutoConstants.foundation_heading)))
+                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y + 3, Math.toRadians(redAutoConstants.foundation_heading + 2)))
                                 .build()
 
                 );
@@ -214,7 +219,7 @@ public class RedAuto extends LinearOpMode {
                 // Pull foundation to the right spot (~under the skybridge) and place the skystone
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 1, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
+                            .splineTo(new Pose2d(redAutoConstants.foundation_turn_x - 1.8, redAutoConstants.foundation_turn_y, Math.toRadians(redAutoConstants.foundation_turn_heading)))
                                 .addMarker(0.3, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
                                 .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
                             .build()
@@ -231,10 +236,15 @@ public class RedAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                             .forward(redAutoConstants.forward_to_second_stone_distance)
-                            .strafeRight(redAutoConstants.far_left_strafe_amount)
                                 .addMarker(1.2, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
                                 .addMarker(0.8, ()->{intake.setOn(); return Unit.INSTANCE;})
                             .build()
+                );
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .strafeRight(redAutoConstants.far_left_strafe_amount)
+                                .build()
                 );
 
                 drive.followTrajectorySync(
@@ -260,11 +270,16 @@ public class RedAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                             .back(50)
+                            .addMarker(0.01, ()->{hooks.close(); return  Unit.INSTANCE;})
                             .addMarker(0.5, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
                             .addMarker(1.2, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
                             .addMarker(1.8, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                            .strafeLeft(6)
                             .build()
                 );
+
+                hooks.open();
+                sleep(300);
 
                 // Driving back under the skybridge to park
                 drive.followTrajectorySync(
@@ -326,7 +341,7 @@ public class RedAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                                 .reverse()
                                 .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
-                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y, Math.toRadians(redAutoConstants.foundation_heading)))
+                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y + 3, Math.toRadians(redAutoConstants.foundation_heading)))
                                 .build()
 
                 );
@@ -361,12 +376,28 @@ public class RedAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .forward(redAutoConstants.d_forward_to_second_middle_stone_distance)
-                                .strafeRight(redAutoConstants.e_far_middle_strafe_amount)
-                                .forward(redAutoConstants.e_far_middle_forward_amount)
                                 .addMarker(0.8, ()->{intake.setOn(); return Unit.INSTANCE;})
                                 .addMarker(1.2, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
                                 .build()
                 );
+
+                sleep(500);
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .strafeRight(redAutoConstants.e_far_middle_strafe_amount)
+                                .build()
+                );
+
+                sleep(500);
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(redAutoConstants.e_far_middle_forward_amount)
+                                .build()
+                );
+
+                sleep(500);
 
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
@@ -445,7 +476,7 @@ public class RedAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                                 .reverse()
                                 .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
-                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y, Math.toRadians(redAutoConstants.foundation_heading)))
+                                .splineTo(new Pose2d(redAutoConstants.foundation_x, redAutoConstants.foundation_y + 3, Math.toRadians(redAutoConstants.foundation_heading)))
                                 .build()
 
                 );
