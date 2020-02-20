@@ -46,12 +46,16 @@ public class RedAuto extends LinearOpMode {
 
         // Left stone variables
 
-        public static double first_left_stone_x_pos = 29;
-        public static double first_left_stone_y_pos = -2.5;
+        public static double first_turn_amount = 90;
+        public static double first_strafe_amount = 15;
+        public static double second_forward_amount = 5;
 
-        public static double second_left_stone_x_pos = 32;
-        public static double second_left_stone_y_pos = 4;
-        public static double second_left_stone_turn = 37;
+         static double first_left_stone_x_pos = 29;
+         static double first_left_stone_y_pos = -2.5;
+
+         static double second_left_stone_x_pos = 32;
+         static double second_left_stone_y_pos = 4;
+         static double second_left_stone_turn = 37;
 
         public static double forward_to_second_stone_distance = 40;
 
@@ -156,9 +160,24 @@ public class RedAuto extends LinearOpMode {
         switch(stonepos) {
             case LEFT:
 
+                v4b.AutoWait();
+                // Turning to be parallel to blocks
+                drive.turnSync(redAutoConstants.first_turn_amount);
+
+                // Strafing to line up with the left block (pushing the other two away)
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                            .strafeRight(redAutoConstants.first_left_stone_x_pos)
+                            .strafeRight(redAutoConstants.first_strafe_amount)
+                            .build()
+                );
+
+                intake.setOn();
+
+                // Driving forward to collect block then strafing back to go under bridge
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                            .forward(redAutoConstants.second_forward_amount)
+                            .strafeLeft(redAutoConstants.first_strafe_amount)
                             .build()
                 );
 
