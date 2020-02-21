@@ -29,7 +29,6 @@ public class Parking extends LinearOpMode {
         SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
         hooks = new FoundationHooks(this, hardwareMap, telemetry);
         intake = new Intake(this, hardwareMap, telemetry);
-        v4b = new V4B(this, hardwareMap, telemetry, intake);
         capstone = new Capstone(this, hardwareMap, telemetry, v4b);
 
         hooks.open();
@@ -44,7 +43,7 @@ public class Parking extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                    .forward(5)
+                    .forward(10)
                     .build()
         );
 
