@@ -48,6 +48,21 @@ public class BlueAuto extends LinearOpMode {
 
         // Left stone variables
 
+        public static double a_right_stone_x_firstpos = 24;
+        public static double a_right_stone_y_firstpos = 18;
+
+        public static double b_second_right_stone_turn = -37.5;
+        public static double b_second_right_stone_forward = 11;
+
+        public static double c_right_stone_little_backup = 5;
+
+        public static double d_forward_to_second_right_stone_distance = 25;
+
+        public static double e_far_right_forward_amount = 18;
+        public static double e_far_right_strafe_amount = 21.5;
+
+        public static double f_right_strafe_amount = 8;
+
         // General
 
         static double under_skybridge_spline_x = 24;
@@ -84,14 +99,14 @@ public class BlueAuto extends LinearOpMode {
 
         // Right stone
 
-        public static double a_first_turn_amount = -92;
-        public static double a_first_strafe_amount = 22;
-        public static double a_second_forward_amount = 5;
+        static double a_first_turn_amount = -92;
+         static double a_first_strafe_amount = 22;
+        static double a_second_forward_amount = 5;
 
-        public static double b_forward_to_second_stone_distance = 49;
+        static double b_forward_to_second_stone_distance = 49;
 
-        public static double c_far_left_forward_amount = 9;
-        public static double c_far_left_strafe_amount = 21;
+        static double c_far_left_forward_amount = 9;
+        static double c_far_left_strafe_amount = 21;
 
     }
 
@@ -113,9 +128,9 @@ public class BlueAuto extends LinearOpMode {
         // Starting up vuforia
         telemetry.addData("Status", "Initializing Vuforia. Please wait...");
         telemetry.update();
-        //initVuforia();
+        initVuforia();
 
-        //vuforiaSkyStone.activate();
+        vuforiaSkyStone.activate();
         telemetry.addData(">>", "Vuforia initialized, press START to begin autonomous, and hope it works :)");
         telemetry.update();
 
@@ -135,8 +150,7 @@ public class BlueAuto extends LinearOpMode {
                         .build()
         );
 
-        //locateSkystone();
-        stonepos = StonePostitions.RIGHT;
+        locateSkystone();
 
 
         switch(stonepos) {
@@ -423,6 +437,126 @@ public class BlueAuto extends LinearOpMode {
                 break;
 
             case LEFT:
+
+                // Making first drive up
+
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .addMarker(0.5, ()->{v4b.AutoWait();return Unit.INSTANCE;})
+                                .strafeTo(new Vector2d(blueAutoConstants.a_right_stone_x_firstpos, blueAutoConstants.a_right_stone_y_firstpos))
+                                .build()
+
+                );
+
+                // Turn to face stone
+                drive.turnSync(Math.toRadians(blueAutoConstants.b_second_right_stone_turn));
+                intake.setOn();
+
+                // Drive forward to collect stone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(blueAutoConstants.b_second_right_stone_forward)
+                                .build()
+                );
+
+                sleep(300);
+
+                // Back off the stone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .back(blueAutoConstants.c_right_stone_little_backup)
+                                .build()
+                );
+
+                // Splining to sit under bridge
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .addMarker(0.8, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                                .addMarker(0.9, ()->{intake.setOff();return Unit.INSTANCE;})
+                                .splineTo(new Pose2d(blueAutoConstants.under_skybridge_spline_x, blueAutoConstants.under_skybrige_spline_y, Math.toRadians(blueAutoConstants.under_skybridge_spline_heading)))
+                                .build()
+                );
+
+                // Splining to the foundation
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .splineTo(new Pose2d(blueAutoConstants.foundation_x, blueAutoConstants.foundation_y + 5, Math.toRadians(blueAutoConstants.foundation_heading)))
+                                .build()
+
+                );
+
+                // Back into foundation and grab on
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .addMarker(0.4, ()->{hooks.close();return Unit.INSTANCE;})
+                                .back(5)
+                                .strafeLeft(blueAutoConstants.d_strafe_with_foundation)
+                                .build()
+                );
+
+                sleep(400); // Wait for hooks to close
+
+                drive.turnSync(Math.toRadians(blueAutoConstants.d_turn_with_foundation));
+
+                // Pull foundation to the right spot (~under the skybridge) and place the skystone
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .splineTo(new Pose2d(blueAutoConstants.foundation_turn_x + 2, blueAutoConstants.foundation_turn_y - 2, Math.toRadians(blueAutoConstants.foundation_turn_heading)))
+                                .addMarker(0.3, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
+                                .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
+                                .build()
+
+                );
+
+                // Releasing foundation and setting 4-bar so we can drive under skybridge
+                hooks.open();
+                v4b.AutoSetUnderSkybridge();
+
+                sleep(400);
+
+                // Driving to far right block
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(blueAutoConstants.d_forward_to_second_right_stone_distance)
+                                .strafeLeft(blueAutoConstants.e_far_right_strafe_amount)
+                                .forward(blueAutoConstants.e_far_right_forward_amount)
+                                .addMarker(0.8, ()->{intake.setOn(); return Unit.INSTANCE;})
+                                .addMarker(1.2, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                                .build()
+                );
+
+                // Going back to the foundation
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .reverse()
+                                .strafeRight(23)
+                                .addMarker(1.3, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                                .addMarker(1.7, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .addMarker(2.4, ()->{intake.setOff();return Unit.INSTANCE;})
+                                .strafeTo(new Vector2d(blueAutoConstants.under_skybridge_spline_x - 1, blueAutoConstants.under_skybrige_spline_y))
+                                .strafeLeft(blueAutoConstants.f_right_strafe_amount)
+                                .build()
+                );
+
+                // Placing the second stone and driving backwards
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .back(47)
+                                .addMarker(0.8, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
+                                .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
+                                .addMarker(1.9, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                                .build()
+                );
+
+                // Driving back under the skybridge to park
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .lineTo(new Vector2d(blueAutoConstants.under_skybridge_spline_x, blueAutoConstants.under_skybrige_spline_y))
+                                .build()
+                );
 
 
                 break;
