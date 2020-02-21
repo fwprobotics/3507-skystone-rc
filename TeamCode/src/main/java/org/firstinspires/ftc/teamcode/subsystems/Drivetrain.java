@@ -28,8 +28,8 @@ public class Drivetrain {
     @Config
     public static class TeleOpDTConstants {
         public static double turning_modifier = 0.85;
-        public static double y_modifier = 0.9;
-        public static double x_modifier = 1.0;
+        public static double y_modifier = 0.87;
+        public static double x_modifier = 0.88;
 
     }
 
@@ -47,11 +47,6 @@ public class Drivetrain {
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         l.idle();
     }

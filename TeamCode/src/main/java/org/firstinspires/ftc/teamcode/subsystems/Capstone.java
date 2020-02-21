@@ -47,30 +47,24 @@ public class Capstone {
     public void control(boolean inputButton){
         if (inputButton & !inputButtonPressed) {
             inputButtonPressed = true;
-            if (v4b.intakeSwitch.getState()) {
-                switch (capstoneStatus) {
-                    case UNPLACED:
-                        v4b.SetMiddle();
-                        capstoneServo.setPosition(CapstoneConstants.down_pos);
-                        l.sleep(200);
-                        capstoneStatus = CapstoneStatuses.PLACED;
-                        v4b.Grab();
-                        break;
+            switch (capstoneStatus) {
+                case UNPLACED:
+                    v4b.SetMiddle();
+                    capstoneServo.setPosition(CapstoneConstants.down_pos);
+                    l.sleep(200);
+                    capstoneStatus = CapstoneStatuses.PLACED;
+                    v4b.Grab();
+                    break;
 
-                    case PLACED:
-                        capstoneServo.setPosition(CapstoneConstants.up_pos);
-                        capstoneStatus = CapstoneStatuses.UNPLACED;
-                        break;
-
-                }
-
+                case PLACED:
+                    capstoneServo.setPosition(CapstoneConstants.up_pos);
+                    capstoneStatus = CapstoneStatuses.UNPLACED;
+                    break;
             }
         }
-
         else {
             inputButtonPressed = false;
         }
-
     }
 
 }

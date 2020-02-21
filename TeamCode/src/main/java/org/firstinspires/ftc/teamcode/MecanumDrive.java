@@ -63,7 +63,7 @@ public class MecanumDrive extends LinearOpMode {
 
                 lift.teleOpControl(gamepad2.right_stick_y);
 
-                v4b.v4bReleaseOrGrab(gamepad2.a);
+                v4b.v4bReleaseOrGrab(gamepad2.left_bumper);
                 v4b.HighPositionButton(gamepad2.dpad_up);
                 v4b.LowPositionButton(gamepad2.dpad_down);
                 v4b.nubGrabberControl(gamepad2.dpad_right);
