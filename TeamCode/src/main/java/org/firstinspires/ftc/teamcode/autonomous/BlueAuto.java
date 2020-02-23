@@ -49,10 +49,10 @@ public class BlueAuto extends LinearOpMode {
         // Left stone variables
 
         public static double a_right_stone_x_firstpos = 24;
-        public static double a_right_stone_y_firstpos = 18;
+        public static double a_right_stone_y_firstpos = 7.6;
 
-        public static double b_second_right_stone_turn = -37.5;
-        public static double b_second_right_stone_forward = 11;
+        public static double b_second_right_stone_turn = -36;
+        public static double b_second_right_stone_forward = 23;
 
         public static double c_right_stone_little_backup = 5;
 
@@ -79,34 +79,34 @@ public class BlueAuto extends LinearOpMode {
 
         // Middle stone
 
-        static double a_middle_stone_x_firstpos = 29;
-        static double a_middle_stone_y_firstpos = 8.52;
+         static double a_middle_stone_x_firstpos = 32;
+         static double a_middle_stone_y_firstpos = 9.4;
 
-        static double b_second_middle_stone_x_pos = 40.5;
-        static double b_second_middle_stone_y_pos = 2;
-        static double b_second_middle_stone_turn = -38;
+         static double b_second_middle_stone_x_pos = 40.5;
+         static double b_second_middle_stone_y_pos = 2;
+         static double b_second_middle_stone_turn = -40;
 
-        static double c_middle_stone_little_backup = 8;
+         static double c_middle_stone_little_backup = 8;
 
-        static double d_forward_to_second_middle_stone_distance = 45;
-        static double d_turn_with_foundation = 90;
-        static double d_strafe_with_foundation = 15;
+         static double d_forward_to_second_middle_stone_distance = 45;
+         static double d_turn_with_foundation = 90;
+         static double d_strafe_with_foundation = 15;
 
-        static double e_far_middle_forward_amount = 7;
-        static double e_far_middle_strafe_amount = 14;
+         static double e_far_middle_forward_amount = 7;
+         static double e_far_middle_strafe_amount = 19;
 
-        static double f_after_strafe_amount = -4;
+         static double f_after_strafe_amount = -4;
 
         // Right stone
 
-        static double a_first_turn_amount = -92;
-         static double a_first_strafe_amount = 22;
-        static double a_second_forward_amount = 5;
+        public static double a_first_turn_amount = -92;
+        public static double a_first_strafe_amount = 22;
+        public static double a_second_forward_amount = 5;
 
-        static double b_forward_to_second_stone_distance = 49;
+        public static double b_forward_to_second_stone_distance = 51;
 
-        static double c_far_left_forward_amount = 9;
-        static double c_far_left_strafe_amount = 21;
+        public static double c_far_left_forward_amount = 9;
+        public static double c_far_left_strafe_amount = 17;
 
     }
 
@@ -196,20 +196,21 @@ public class BlueAuto extends LinearOpMode {
                                 .addMarker(1.4, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
                                 .addMarker(2.0, ()->{intake.setOff();return Unit.INSTANCE;})
                                 .splineTo(new Pose2d(blueAutoConstants.under_skybridge_spline_x + 1.5, blueAutoConstants.under_skybrige_spline_y, Math.toRadians(blueAutoConstants.under_skybridge_spline_heading - 2)))
-                                .build()
-                );
-
-                sleep(200);
-
-                // Splining to the foundation
-                drive.followTrajectorySync(
-                        drive.trajectoryBuilder()
-                                .reverse()
-                                .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .addMarker(1.8, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
                                 .splineTo(new Pose2d(blueAutoConstants.foundation_x, blueAutoConstants.foundation_y - 5, Math.toRadians(blueAutoConstants.foundation_heading)))
                                 .build()
-
                 );
+//
+//                sleep(200);
+//
+//                // Splining to the foundation
+//                drive.followTrajectorySync(
+//                        drive.trajectoryBuilder()
+//                                .reverse()
+//
+//                                .build()
+//
+//                );
 
                 // Back into foundation and grab on
                 drive.followTrajectorySync(
@@ -267,9 +268,9 @@ public class BlueAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .reverse()
-                                .addMarker(1.8, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
+                                .addMarker(2.1, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
                                 .addMarker(2.4, ()->{intake.setOff();return Unit.INSTANCE;})
-                                .addMarker(2.2, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .addMarker(2.5, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
                                 .splineTo(new Pose2d(blueAutoConstants.under_skybridge_spline_x + 1.8, blueAutoConstants.under_skybrige_spline_y, Math.toRadians(blueAutoConstants.under_skybridge_spline_heading)))
                                 .build()
                 );
@@ -357,7 +358,7 @@ public class BlueAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                                 .addMarker(0.4, ()->{hooks.close();return Unit.INSTANCE;})
                                 .back(5)
-                                .strafeLeft(blueAutoConstants.d_strafe_with_foundation)
+                                .strafeLeft(blueAutoConstants.d_strafe_with_foundation - 2)
                                 .build()
                 );
 
@@ -449,7 +450,7 @@ public class BlueAuto extends LinearOpMode {
                 );
 
                 // Turn to face stone
-                drive.turnSync(Math.toRadians(blueAutoConstants.b_second_right_stone_turn));
+//                drive.turnSync(Math.toRadians(blueAutoConstants.b_second_right_stone_turn));
                 intake.setOn();
 
                 // Drive forward to collect stone
@@ -483,7 +484,7 @@ public class BlueAuto extends LinearOpMode {
                         drive.trajectoryBuilder()
                                 .reverse()
                                 .addMarker(0.1, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
-                                .splineTo(new Pose2d(blueAutoConstants.foundation_x, blueAutoConstants.foundation_y + 5, Math.toRadians(blueAutoConstants.foundation_heading)))
+                                .splineTo(new Pose2d(blueAutoConstants.foundation_x, blueAutoConstants.foundation_y - 5, Math.toRadians(blueAutoConstants.foundation_heading)))
                                 .build()
 
                 );
@@ -534,7 +535,7 @@ public class BlueAuto extends LinearOpMode {
                                 .reverse()
                                 .strafeRight(23)
                                 .addMarker(1.3, ()->{v4b.AutoGrab();return Unit.INSTANCE;})
-                                .addMarker(1.7, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
+                                .addMarker(1.5, ()->{v4b.nubSetClosed();return Unit.INSTANCE;})
                                 .addMarker(2.4, ()->{intake.setOff();return Unit.INSTANCE;})
                                 .strafeTo(new Vector2d(blueAutoConstants.under_skybridge_spline_x - 1, blueAutoConstants.under_skybrige_spline_y))
                                 .strafeLeft(blueAutoConstants.f_right_strafe_amount)
@@ -545,9 +546,9 @@ public class BlueAuto extends LinearOpMode {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
                                 .back(47)
-                                .addMarker(0.8, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
-                                .addMarker(1.4, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
-                                .addMarker(1.9, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
+                                .addMarker(0.2, ()->{v4b.AutoSetLowScoring(); return Unit.INSTANCE;})
+                                .addMarker(0.9, ()->{v4b.nubSetOpen(); return Unit.INSTANCE;})
+                                .addMarker(1.6, ()->{v4b.AutoWait(); return Unit.INSTANCE;})
                                 .build()
                 );
 
@@ -581,7 +582,7 @@ public class BlueAuto extends LinearOpMode {
     }
 
     private void locateSkystone() {
-        while (!vuforiaSkyStone.track("Stone Target").isVisible && counter <= 450) {
+        while (!vuforiaSkyStone.track("Stone Target").isVisible && counter <= 200) {
             sleep(5);
             counter = counter + 1;
         }
