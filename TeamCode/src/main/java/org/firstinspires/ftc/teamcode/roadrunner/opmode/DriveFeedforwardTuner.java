@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunner.opmodes;
+package org.firstinspires.ftc.teamcode.roadrunner.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -8,17 +8,15 @@ import com.acmerobotics.roadrunner.tuning.AccelRegression;
 import com.acmerobotics.roadrunner.tuning.RampRegression;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LoggingUtil;
 
+import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_RPM;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.getMaxRpm;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.rpmToVelocity;
 
 /*
@@ -31,9 +29,8 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.rpm
  *   4. Adjust the encoder data based on the velocity tuning data and find kA with another linear
  *      regression.
  */
-@Disabled
 @Config
-@Autonomous(group = "roadrunner")
+@Autonomous(group = "drive")
 public class DriveFeedforwardTuner extends LinearOpMode {
     public static final double MAX_POWER = 0.7;
     public static final double DISTANCE = 100;
@@ -47,7 +44,7 @@ public class DriveFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         NanoClock clock = NanoClock.system();
 
@@ -97,7 +94,7 @@ public class DriveFeedforwardTuner extends LinearOpMode {
         telemetry.addLine("Running...");
         telemetry.update();
 
-        double maxVel = rpmToVelocity(getMaxRpm());
+        double maxVel = rpmToVelocity(MAX_RPM);
         double finalVel = MAX_POWER * maxVel;
         double accel = (finalVel * finalVel) / (2.0 * DISTANCE);
         double rampTime = Math.sqrt(2.0 * DISTANCE / accel);

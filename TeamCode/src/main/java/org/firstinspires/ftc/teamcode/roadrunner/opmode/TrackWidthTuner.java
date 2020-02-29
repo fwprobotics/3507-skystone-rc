@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunner.opmodes;
+package org.firstinspires.ftc.teamcode.roadrunner.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -6,14 +6,12 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 
 /*
  * This routine determines the effective track width. The procedure works by executing a point turn
@@ -24,9 +22,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriv
  * this procedure a few times and averages the values for additional accuracy. Note: a relatively
  * accurate track width estimate is important or else the angular constraints will be thrown off.
  */
-@Disabled
 @Config
-@Autonomous(group = "tuning")
+@Autonomous(group = "drive")
 public class TrackWidthTuner extends LinearOpMode {
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;
@@ -36,7 +33,7 @@ public class TrackWidthTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
         // drive encoders for computing the heading
 
@@ -60,7 +57,7 @@ public class TrackWidthTuner extends LinearOpMode {
             double headingAccumulator = 0;
             double lastHeading = 0;
 
-            drive.turn(Math.toRadians(ANGLE));
+            drive.turnAsync(Math.toRadians(ANGLE));
 
             while (!isStopRequested() && drive.isBusy()) {
                 double heading = drive.getPoseEstimate().getHeading();
