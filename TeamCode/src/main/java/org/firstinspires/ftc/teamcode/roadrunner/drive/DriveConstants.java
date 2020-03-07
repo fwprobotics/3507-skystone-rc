@@ -4,30 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 
-/*
- * Constants shared between multiple drive types.
- *
- * Tune or adjust the following constants to fit your robot. Note that the non-final
- * fields may also be edited through the dashboard (connect to the robot's WiFi network and
- * navigate to https://192.168.49.1:8080/dash). Make sure to save the values here after you
- * adjust them in the dashboard; **config variable changes don't persist between app restarts**.
- *
- * These are not the only parameters; some are located in the localizer classes, drive base classes,
- * and op modes themselves.
- */
 @Config
 public class DriveConstants {
 
-    /*
-     * These are motor constants that should be listed online for your motors.
-     */
     public static final double TICKS_PER_REV = 1120;
     public static final double MAX_RPM = 300;
 
-    /*
-     * Set the first flag appropriately. If using the built-in motor velocity PID, update
-     * MOTOR_VELO_PID with the tuned coefficients from DriveVelocityPIDTuner.
-     */
     public static final boolean RUN_USING_ENCODER = false;
     public static final PIDCoefficients MOTOR_VELO_PID = null;
 
@@ -40,7 +22,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 2;
-    public static double GEAR_RATIO = 3/4; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 4/3; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 17.5;
 
     /*
@@ -49,7 +31,7 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.01859; //1 / rpmToVelocity(getMaxRpm());
+    public static double kV = 0.01193;
     public static double kA = 0.00022;
     public static double kStatic = 0.06351;
 
