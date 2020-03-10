@@ -3,13 +3,36 @@ package org.firstinspires.ftc.teamcode.roadrunner.drive;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
+import com.qualcomm.hardware.motors.RevRobotics20HdHexMotor;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+/*
+ * Constants shared between multiple drive types.
+ *
+ * TODO: Tune or adjust the following constants to fit your robot. Note that the non-final
+ * fields may also be edited through the dashboard (connect to the robot's WiFi network and
+ * navigate to https://192.168.49.1:8080/dash). Make sure to save the values here after you
+ * adjust them in the dashboard; **config variable changes don't persist between app restarts**.
+ *
+ * These are not the only parameters; some are located in the localizer classes, drive base classes,
+ * and op modes themselves.
+ */
 @Config
 public class DriveConstants {
 
-    public static final double TICKS_PER_REV = 1120;
-    public static final double MAX_RPM = 300;
+    /*
+     * The type of motor used on the drivetrain. While the SDK has definitions for many common
+     * motors, there may be slight gear ratio inaccuracies for planetary gearboxes and other
+     * discrepancies. Additional motor types can be defined via an interface with the
+     * @DeviceProperties and @MotorType annotations.
+     */
+    private static final MotorConfigurationType MOTOR_CONFIG =
+            MotorConfigurationType.getMotorType(RevRobotics20HdHexMotor.class);
 
+    /*
+     * Set the first flag appropriately. If using the built-in motor velocity PID, update
+     * MOTOR_VELO_PID with the tuned coefficients from DriveVelocityPIDTuner.
+     */
     public static final boolean RUN_USING_ENCODER = false;
     public static final PIDCoefficients MOTOR_VELO_PID = null;
 
@@ -22,7 +45,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 2;
-    public static double GEAR_RATIO = 4/3; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 3/4; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 17.5;
 
     /*
@@ -31,7 +54,7 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.01193;
+    public static double kV = 0.01859; //1 / rpmToVelocity(getMaxRpm());
     public static double kA = 0.00022;
     public static double kStatic = 0.06351;
 
@@ -44,21 +67,31 @@ public class DriveConstants {
      * forces acceleration-limited profiling).
      */
     public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(
-            30.0, 30.0, 0.0,
+            40.0, 40.0, 0.0,
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     );
 
 
     public static double encoderTicksToInches(double ticks) {
-        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / MOTOR_CONFIG.getTicksPerRev();
     }
 
     public static double rpmToVelocity(double rpm) {
-        return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
+        return 47.12; //rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
+    }
+
+    public static double getMaxRpm() {
+        return MOTOR_CONFIG.getMaxRPM() *
+                (RUN_USING_ENCODER ? MOTOR_CONFIG.getAchieveableMaxRPMFraction() : 300.0);
+    }
+
+    public static double getTicksPerSec() {
+        // note: MotorConfigurationType#getAchieveableMaxTicksPerSecond() isn't quite what we want
+        return (MOTOR_CONFIG.getMaxRPM() * MOTOR_CONFIG.getTicksPerRev() / 60.0);
     }
 
     public static double getMotorVelocityF() {
         // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
-        return 32767 * 60.0 / (MAX_RPM * TICKS_PER_REV);
+        return 32767 / getTicksPerSec();
     }
 }

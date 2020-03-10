@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.testing;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.mecanum.SampleMecanumDriveREV;
 
 //VUCODE
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -29,7 +29,7 @@ public class SkystoneTest extends LinearOpMode {
 
     public void runOpMode() {
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveBase drive = new SampleMecanumDriveREV(hardwareMap);
 
         // VUCODE
         vuforiaSkyStone = new VuforiaSkyStone();  //vucode
@@ -48,8 +48,8 @@ public class SkystoneTest extends LinearOpMode {
         START MOVE CODE
         */
 
-        drive.followTrajectory(
-                drive.trajectoryBuilder(new Pose2d())
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
                     .forward(14)
                     .build()
         );
